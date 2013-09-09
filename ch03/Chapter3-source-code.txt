@@ -1,0 +1,321 @@
+# NOTE:
+# All Impala statements are executed from impala-shell (prompt >)
+# All Linux commands are executed from a terminal window (promt $)
+# MySQL statements are executed from mysql command line tool (prompt mysql>)
+
+# Listing 3.1  Select the maximum stock price using Impala
+> SELECT max(close_price) FROM stockprice 
+> WHERE yyyymmdd LIKE '2009%' AND symbol = 'NOK';
+
+
+# Impala query from impala-shell (Apple stockprices in August, 2013)
+> SELECT yyyymmdd, close_price FROM stockprice where symbol = 'AAPL'
+> AND yyyymmdd LIKE '2013-08%' ORDER BY yyyymmdd LIMIT 10;
+
+
+# Create an internal table
+> CREATE TABLE weblog
+> (ip_address STRING,
+> userid STRING, 
+> date_time TIMESTAMP,
+> request STRING,
+> http_status SMALLINT,
+> size INT)
+> STORED AS textfile;
+
+
+# Create an external table - data files stored in /user/impala/input/ directory
+> CREATE EXTERNAL TABLE stockprice
+> (symbol STRING,
+> yyyymmdd STRING,
+> open_price FLOAT,
+> high_price FLOAT,
+> low_price FLOAT,
+> close_price FLOAT,
+> stock_volume INT,
+> adjclose_price FLOAT)
+> ROW FORMAT DELIMITED
+> FIELDS TERMINATED BY ','
+> LINES TERMINATED Y '\n'
+> LOCATION '/user/impala/input';
+
+
+# Create table like
+> CREATE TABLE new_weblog LIKE weblog;
+
+
+
+# Alter table examples
+> ALTER TABLE weblog RENAME apache_log;
+> ALTER TABLE apache_log RENAME weblog;
+> ALTER TABLE weblog SET FILEFORMAT sequencefile;
+> ALTER TABLE ADD COLUMNS method STRING;
+> ALTER TABLE DROP size;
+> ALTER TABLE weblog CHANGE date_time date STRING;
+> ALTER TABLE weblog SET LOCATION '/user/impala/input2'
+> ALTER TABLE partitioned_table ADD PARTITION (month='January');
+
+
+# Listing 3.3 Drop table
+> DROP TABLE weblog;
+
+
+# Listing 3.4 Create a view
+> CREATE VIEW weblog_view AS
+> SELECT ip_address, request, http_status FROM weblog;
+
+
+# HIVE statement - Create table in avro format in Hive
+> CREATE TABLE new_table
+> ROW FORMAT serde 'org.apache.hadoop.hive.serde2.avro.AvroSerDe'
+> STORED AS INPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerInputFormat'
+> OUTPUTFORMAT 'org.apache.hadoop.hive.ql.io.avro.AvroContainerOutputFormat'
+
+
+# Listing 3.6 Create database
+> CREATE DATABASE stock;
+> USE stock;
+> CREATE TABLE stockprice
+> (yyyymmdd STRING,
+> open_price FLOAT,
+> high_price FLOAT,
+> low_price FLOAT, 
+> close_price FLOAT,
+> stock_volume INT,
+> adjclose_price FLOAT)
+> ROW FORMAT DELIMITED
+> FIELDS TERMINATED BY ','
+> LINES TERMINATED Y '\n'
+> LOCATION '/user/impala/input';
+> USE default;
+> DROP TABLE stock.stockprice;
+> DROP DATABASE stock;
+
+
+# Listing 3.7  Hadoop commands from Linux command line
+$  hadoop fs -ls /user/hive/warehouse
+
+
+# Select statement example
+> SELECT ip_address, count(ip_address) AS count
+> FROM weblog
+> GROUP BY ip_address
+> ORDER BY count DESC LIMIT 100;
+
+
+# Select statement wit union all clause
+> SELECT symbol, yyyymmdd, high_price, low_price, adjclose_price, volume
+> FROM stockprice
+> WHERE symbol 'AAPL' AND
+> adjclose_price > 500.00
+> ORDER BY adjclose_price DESC
+> LIMIT 10
+> UNION ALL
+> SELECT symbol, yyyymmdd, high_price, low_price, adjclose_price, volume
+> FROM stockprice
+> WHERE symbol 'GOOG' AND
+> adjclose_price > 900.00
+> ORDER BY adjclose_price DESC
+> LIMIT 10
+
+
+# With statement example
+> CREATE TABLE x (x INT);
+> CREATE TABLE y (y INT);
+> INSERT INTO x VALUES (1);
+> INSERT INTO x VALUES (3);
+> INSERT INTO x VALUES (5);
+> INSERT INTO y VALUES (2); 
+> INSERT INTO y VALUES (4);
+> INSERT INTO y VALUES (-2);
+> WITH  e1 as (SELECT *  FROM  x WHERE x > 3), 
+> e2 as (SELECT * FROM y where y < 0)   
+> SELECT * FROM e1 UNION ALL SELECT * FROM e2;   
+
+
+# Listing 3.9 INSERT INTO VALUES statement
+> CREATE TABLE x (x INT);
+> INSERT INTO x VALUES(1);
+> INSERT INTO x VALUES(2); 
+> INSERT INTO x VALUES(3);
+> INSERT INTO x VALUES(4);
+
+# Hadoop filesystem commands executed from Linux shell
+$ hadoop fs -ls /user/hive/warehouse/x
+$ hadoop fs -cat /user/hive/warehouse/x/*
+
+
+# Insert statement 
+> CREATE TABLE y (y INT);
+> INSERT INTO y SELECT * FROM x;
+
+# Hadoop filesystem commands executed from Linux shell
+$ hadoop fs -ls /user/hive/warehouse/y 
+$ hadoop fs -cat /user/hive/warehouse/y/*  
+
+
+# Listing 3.13 LOAD DATA statement
+# hadoop file system command executed from Linux shell
+$ hadoop fs –put /home/coudera/stocks.csv /user/cloudera/stock.csv
+
+# Impala statements
+> CREATE TABLE  stockprice
+> (symbol, STRING, yyyymmdd STRING, open_price FLOAT, 
+> high_price FLOAT, low_price FLOAT,
+> close_price FLOAT, stock_volume INT, adjclose_price FLOAT);
+
+> LOAD DATA INPATH '/user/cloudera/stocks.csv' OVERWRITE INTO TABLE stockprice;  
+
+
+# Apache Flume example (see also flume.conf)
+$ bin/flume-ng agent --conf conf/ -f conf/flume.conf -n tier1
+$ head -10 /etc/passwd | netcat localhost 9999
+$ hadoop fs –ls /user/impala/flume
+
+# Impala statements
+> CREATE  TABLE  linux_user 
+> (username string, 
+> password string, 
+> userid string,  
+> groupid string, 
+> comment string, 
+> directory string, 
+> shell string)
+> ROW FORMAT DELIMITED FIELDS TERMINATED BY ':' 
+> LINES TERMINATED BY '\n'
+> STORED AS SEQUENCEFILE;
+> LOAD DATA INPATH '/user/impala/flume/' INTO TABLE linux_user;                                       #B
+> SELECT * FROM linux_user; 
+
+
+# Listing 3.16 Storing stock proice in MySQL database
+# MySQL statements
+mysql> CREATE DATABASE test;
+mysql> USE test;
+mysql> CREATE TABLE stockprice
+(symbol VARCHAR(10), 
+yyyymmdd VARCHAR(12), 
+open_price FLOAT, 
+high_price FLOAT, 
+low_price FLOAT,
+close_price FLOAT, 
+stock_volume INT, 
+adjclose_price FLOAT);
+mysql> INSERT INTO stockprice VALUES('GOOG', 
+'2013-08-23',877.83,878.00,869.75,870.21,1048200,870.21);
+mysql> INSERT INTO stockprice VALUES('GOOG', 
+'2013-08-22',872.70,874.75,870.25,873.71,869900,873.71);
+mysql> INSERT INTO stockprice VALUES('GOOG', 
+'2013-08-21',870.65,876.91,866.50,869.33,1757300,869.33);
+mysql> SELECT  * FROM stockprice;
+
+
+# Listing 3.17 Load data into Hive from MySQL using command line
+$ sqoop import --connect jdbc:mysql://localhost/test --table stockprice --split-by symbol --username sqoop --password sqoop --hive-import
+$ hadoop fs -ls /user/cloudera/stockprice     
+$ hadoop fs -cat /user/cloudera/stockprice/part*
+# Impala statement executed from impala-shell
+$ impala-shell
+> REFRESH stockprice;
+> SELECT * FROM stockprice;
+
+
+# Listing 3.21 Select count() statements
+> SELECT count(*) FROM stockprice;
+> SELECT count(close_price) FROM stockprice;
+> SELECT count(*) FROM stockpice WHERE stock_volume > 100000;
+> SELECT count(distinct symbol) FROM stockprice;
+
+
+# Listing 3.22 Select sum() statements
+> SELECT sum(stock_volume) 
+> FROM stockprice 
+> WHERE yyyymmdd LIKE '2013-08%' AND symbol = ‘GOOG’;
+> SELECT symbol, sum(stock_volume) 
+> FROM stockprice
+> WHERE yyyymmdd LIKE '2010%' group by symbol;
+
+
+# Listing 3.23 Select avg() statements
+> SELECT avg(stock_volume) 
+> FROM stockprice WHERE yyyymmdd LIKE '2013-08%' AND symbol = ‘GOOG’;
+> SELECT symbol, avg(stock_volume) 
+> FROM stockprice 
+> WHERE yyyymmdd LIKE '2010%' GROUP BY symbol HAVING avg(stock_volume) BETWEEN 1000000 AND 5000000;
+
+            
+# Listing 3.24 Select max() and min() statements
+> SELECT max(stock_volume) 
+> FROM stockprice
+> WHERE yyyymmdd LIKE '2013-08%' AND symbol = ‘GOOG’;
+> SELECT min(stock_volume) 
+> FROM stockprice 
+> WHERE yyyymmdd LIKE '2010%’;
+                    
+               
+# Listing 3.25 rand() function 
+> SELECT DISTINCT symbol FROM stockprice ORDER BY rand() LIMIT 2;
+
+
+# Listing 3.26 Mathematical functions
+> SELECT abs(-4.0);  
+> SELECT ceil(3.2); 
+> SELECT floor(4.2);
+> SELECT round(3.5);
+
+
+# Listing 3.27 Conv() functions
+> SELECT conv(‘1024’, 10, 2) FROM stockprice ORDER BY rand() LIMIT 10;
+> SELECT conv(‘1024’, 10, 16) FROM stockprice ORDER BY rand() LIMIT 10;
+
+
+# Listing 3.28 Calculating standard deviation
+> SELECT avg(close_price) 
+> FROM stockprice 
+> WHERE symbol = 'GOOG' AND yyyymmdd LIKE 2013%';
+> SELECT count(*) 
+> FROM stockprice 
+> WHERE symbol = 'GOOG' AND yyyymmdd LIKE '2013%';
+> SELECT sum ( power(close_price - 835, 2.0 ) ) 
+> FROM stockprice 
+> WHERE symbol = 'GOOG' AND yyyymmdd LIKE '2013%';
+
+
+# Listing 3.29 year(0 and hour() functions
+> SELECT year(‘2013-08-31’);
+> SELECT hour(‘2013-08-31 23:11:12’);
+> SELECT sqrt(553028 / 171);
+
+
+# Listing 3.30 date functions
+> SELECT dayname(‘2013-08-31’);
+> SELECT dayofweek(‘2013-08-31’);   
+
+
+# Listing 3.30 date_add() and date_sub() functions
+> SELECT date_add(‘2013-08-31’, 3);
+> SELECT date_sub(‘2013-08-31’, 3);    
+  
+
+# Listing 3.31 String functions
+> SELECT concat(‘Hello, ’, ‘World!’); 
+> SELECT instr(‘Hello, World!’, ‘Hell’);
+> SELECT length(‘Hello, World!’); 
+> SELECT lower(‘Hello, World!’);
+> SELECT reverse(‘Hello, World!’);
+> SELECT substr(‘Hello, World!’, 7, 6);
+
+
+# Listing 3.32 Regular expression
+> SELECT regexp_replace(‘Hello, World!!!’, ‘[^a-zA-Z]’, ‘’);
+
+
+
+# Listing 3.33 Type conversion function
+> SELECT concat(‘I am ‘, cast(18 as string), ‘ years old.’);
+
+
+# Listing 3.34  Conditional functions
+> SELECT avg( close_price * ( case when symbol = ‘NOK’ then 0.5 when symbol = ‘GOOG’ then 0.3 when symbol = ‘AAPL’ then 0.2 else 0  end) ) FROM stockprice;
+> SELECT avg(isnull(stock_volume, 0)) FROM stockprice WHERE symbol = ‘AAPL’;
+

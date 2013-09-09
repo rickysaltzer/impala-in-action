@@ -1,4 +1,4 @@
 impala-in-action
 ================
 
-Impala in Action Repo
+Repo used for tutorials in the upcoming Impala in Action book
