@@ -15,7 +15,7 @@ then
 fi
 mkdir -p $TPCDS_OUT
 cd $TPCDS_DIR/tools
-echo "Using scale factor of $SCALE (~ ${SCALE}GB)"
+echo "Using scale factor of $SCALE"
 echo "Building your dataset (this may take some time)..."
 
 counter=0
