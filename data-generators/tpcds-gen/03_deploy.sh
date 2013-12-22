@@ -4,16 +4,14 @@ export DB=${DB-tpcds}
 IMPALA_HOST=${IMPALA_HOST-$(hostname)}
 TPCDS_OUT="data"
 HDFS_DIR="/user/$USER/tpcds"
-TABLES="store_sales inventory time_dim store household_demographics item customer_address customer_demographics date_dim warehouse customer"
-
-# Make directory to store db
-hadoop fs -mkdir -p $HDFS_DIR
+TABLES="store_sales inventory time_dim store household_demographics item customer_address customer_demographics date_dim warehouse customer store_returns"
 
 # Copy Tables
 for table in $TABLES
 do
 	echo "Copying $table..."
-	hadoop fs -put $TPCDS_OUT/$table $HDFS_DIR/$table
+	hadoop fs -mkdir -p $HDFS_DIR/$table
+	hadoop fs -put $TPCDS_OUT/$table*.dat $HDFS_DIR/$table
 done
 
 # Create DDLs
