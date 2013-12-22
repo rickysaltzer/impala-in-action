@@ -17,14 +17,14 @@ cd $TPCDS_DIR/tools
 echo "Using scale factor of $SCALE"
 echo "Building your dataset (this may take some time)..."
 
+mkdir -p $TPCDS_OUT
 counter=0
 for table in $TABLES
 do
-	mkdir -p $TPCDS_OUT/$table
 	for cpu in $(seq 1 $NUM_CPUS)
 	do
 		counter=$(expr $counter + 1)
-		./dsdgen -force Y -suffix ".dat" -verbose N -scale $SCALE -quiet Y -dir $TPCDS_OUT/$table -parallel $NUM_CPUS -child $cpu -table $table &
+		./dsdgen -force Y -suffix ".dat" -verbose N -scale $SCALE -quiet Y -dir $TPCDS_OUT -parallel $NUM_CPUS -child $cpu -table $table &
 		GEN_PIDS[$counter]=$!
 	done
 done
