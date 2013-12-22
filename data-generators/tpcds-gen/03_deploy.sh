@@ -19,7 +19,7 @@ hadoop fs -mkdir -p $hdfs_table_dirs
 for table in $TABLES
 do
 	echo "Copying $table..."
-	hadoop fs -put $TPCDS_OUT/$table.dat $HDFS_DIR/$table/
+	hadoop fs -put $TPCDS_OUT/$table*.dat $HDFS_DIR/$table/
 done
 
 # Create DDLs
