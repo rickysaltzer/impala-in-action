@@ -1,5 +1,5 @@
-create database if not exists ${DB};
-use ${DB};
+create database if not exists ${env:DB};
+use ${env:DB};
 
 drop table if exists time_dim;
 
@@ -17,4 +17,4 @@ create external table time_dim
     t_meal_time               string
 )
 row format delimited fields terminated by '|' 
-location '${LOCATION}';
+location '${env:LOCATION}';

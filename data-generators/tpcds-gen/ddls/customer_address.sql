@@ -1,5 +1,5 @@
-create database if not exists ${DB};
-use ${DB};
+create database if not exists ${env:DB};
+use ${env:DB};
 
 drop table if exists customer_address;
 
@@ -20,4 +20,4 @@ create external table customer_address
     ca_location_type          string
 )
 row format delimited fields terminated by '|' 
-location '${LOCATION}';
+location '${env:LOCATION}';

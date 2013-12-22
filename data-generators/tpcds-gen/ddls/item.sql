@@ -1,5 +1,5 @@
-create database if not exists ${DB};
-use ${DB};
+create database if not exists ${env:DB};
+use ${env:DB};
 
 drop table if exists item;
 
@@ -29,4 +29,4 @@ create external table item
     i_product_name            string
 )
 row format delimited fields terminated by '|' 
-location '${LOCATION}';
+location '${env:LOCATION}';

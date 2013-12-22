@@ -1,5 +1,5 @@
-create database if not exists ${DB};
-use ${DB};
+create database if not exists ${env:DB};
+use ${env:DB};
 
 drop table if exists store_sales;
 
@@ -30,4 +30,4 @@ create external table store_sales
     ss_net_profit             float                  
 )
 row format delimited fields terminated by '|' 
-location '${LOCATION}';
+location '${env:LOCATION}';

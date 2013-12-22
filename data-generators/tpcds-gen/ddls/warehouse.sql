@@ -1,5 +1,5 @@
-create database if not exists ${DB};
-use ${DB};
+create database if not exists ${env:DB};
+use ${env:DB};
 
 drop table if exists warehouse;
 
@@ -20,4 +20,4 @@ create external table warehouse(
 ,     w_gmt_offset              float                  
 )
 row format delimited fields terminated by '|' 
-location '${LOCATION}';
+location '${env:LOCATION}';
