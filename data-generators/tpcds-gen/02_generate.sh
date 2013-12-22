@@ -3,7 +3,7 @@
 PROJECT_DIR=$PWD
 TPCDS_OUT="$PWD/data/"
 TPCDS_DIR="generate"
-SCALE=${$SCALE:-1}
+SCALE=${SCALE:-1}
 NUM_CPUS=$(cat /proc/cpuinfo | grep processor | wc -l)
 TABLES="store_sales inventory time_dim store household_demographics item customer_address customer_demographics date_dim warehouse"
 
