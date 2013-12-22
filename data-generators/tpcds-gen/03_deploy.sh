@@ -1,13 +1,19 @@
 #!/bin/bash
 
-DB=${DB-"tpcds"}
+export DB=${DB-"tpcds"}
 IMPALA_HOST=${IMPALA_HOST-$(hostname)}
 TPCDS_OUT="data"
 HDFS_DIR="/user/$USER/tpcds"
 TABLES="store_sales inventory time_dim store household_demographics item customer_address customer_demographics date_dim warehouse"
 
 # Make all directories first
-hadoop fs -mkdir -p $TABLES
+hdfs_tables_dirs=""
+for table in $TABLES
+do
+	hdfs_table_dirs="$hdfs_table_dirs $HDFS_DIR/$table"
+done
+
+hadoop fs -mkdir -p $hdfs_table_dirs
 
 # Copy Tables
 for table in $TABLES
