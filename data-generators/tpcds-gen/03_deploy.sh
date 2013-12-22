@@ -20,7 +20,7 @@ for table in $TABLES
 do
 	echo "Copying $table..."
 	hadoop fs -put $TPCDS_OUT/$table.dat $HDFS_DIR/$table/
-do
+done
 
 # Create DDLs
 for table in $TABLES
