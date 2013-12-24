@@ -5,7 +5,7 @@ TPCDS_OUT="$PWD/data/"
 TPCDS_DIR="generate"
 SCALE=${SCALE:-1}
 NUM_CPUS=$(cat /proc/cpuinfo | grep processor | wc -l)
-TABLES="store_sales inventory time_dim store household_demographics item customer_address customer_demographics date_dim warehouse customer"
+TABLES="store store_sales inventory time_dim store household_demographics item customer_address customer_demographics date_dim warehouse customer"
 
 # Check to make sure build.sh was already ran
 if [ ! -d $TPCDS_DIR ];

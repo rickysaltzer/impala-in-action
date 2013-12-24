@@ -4,7 +4,7 @@ export DB=${DB-tpcds}
 IMPALA_HOST=${IMPALA_HOST-$(hostname)}
 TPCDS_OUT="data"
 HDFS_DIR="/user/$USER/tpcds"
-TABLES="store_sales inventory time_dim store household_demographics item customer_address customer_demographics date_dim warehouse customer store_returns"
+TABLES="store store_sales inventory time_dim store household_demographics item customer_address customer_demographics date_dim warehouse customer store_returns"
 
 # Copy Tables
 for table in $TABLES
