@@ -1,0 +1,8 @@
+# Qlikview edit script
+SET MonthNames=’Jan;Feb;Mar;Apr;May;June;Jul;Aug;Sep;Oct;Nov;Dec’; 
+SET DayNames=’Mon;Tue;Wed;Thu;Fri;Sat;Sun’; 
+
+
+ODBC CONNECT32 TO Impala;
+SQL Select * from stockprice 
+    where yyyymmdd > '2010';                                         
